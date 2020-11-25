@@ -32,7 +32,7 @@ class BaiduGatewayTest extends TestCase
             'mobile' => 18888888888,
             'template' => 'mock-tpl-id',
             'signatureId' => $config['invoke_id'],
-            'contentVar' => ['mock-data-1', 'mock-data-2'],
+            'contentVar' => ['mock-data-1', 'mock-data-2', 'custom' => 'mock-custom'],
         ];
         $gateway->shouldReceive('request')->with(
             'post',
@@ -41,6 +41,10 @@ class BaiduGatewayTest extends TestCase
             }),
             \Mockery::on(function ($params) use ($expected) {
                 ksort($params['json']);
+                if (!empty($expected['contentVar']['custom'])) {
+                    $expected['custom'] = $expected['contentVar']['custom'];
+                    unset($expected['contentVar']['custom']);
+                }
                 ksort($expected);
 
                 return $params['json'] == $expected;
@@ -54,7 +58,7 @@ class BaiduGatewayTest extends TestCase
 
         $message = new Message([
             'template' => 'mock-tpl-id',
-            'data' => ['mock-data-1', 'mock-data-2'],
+            'data' => ['mock-data-1', 'mock-data-2', 'custom' => 'mock-custom'],
         ]);
 
         $config = new Config($config);
